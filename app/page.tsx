@@ -2,10 +2,11 @@ import Image from "next/image";
 
 export default async function Home() {
 
-  const res = await fetch("http://localhost:3000/api", {
-    next : { revalidate : 10 } 
-  }).then((res) => res.json())
+  const nextApiUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000/api";
 
+  const res = await fetch(`${nextApiUrl}/api`, {
+    cache: "no-store", 
+  }).then((res) => res.json())
 
 
   return (
@@ -28,7 +29,10 @@ export default async function Home() {
             .
           </li>
           <li className="tracking-[-.01em]">
-            {res.message} at {res.timestamp}
+            <div className="text-sm/6 border border-solid border-black/[.08] hover:bg-amber-700 duration-100 dark:border-white/[.145] rounded-lg p-4"> 
+            <code>{res.message}</code> | <code>{res.timestamp}</code>
+
+            </div>
           </li>
         </ol>
 
