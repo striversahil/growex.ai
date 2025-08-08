@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +12,45 @@ import ChatWindow from "./window";
 type Props = {};
 
 const ChatInterface = (props: Props) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Prevent default form submission
+    setIsSubmitting(true);
+
+    const formData = new FormData(e.currentTarget);
+    const query = formData.get("query") as string;
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        body: JSON.stringify({
+          query: query,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+      console.log("Response:", result);
+
+      // Clear the input after successful submission
+      (e.target as HTMLFormElement).reset();
+    } catch (error) {
+      console.error("Error submitting chat:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isSubmitting]);
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -25,17 +64,18 @@ const ChatInterface = (props: Props) => {
           <div className="flex-1 overflow-y-auto p-2">
             <ChatWindow />
           </div>
-          <form
-            className="space-y-4 px-2 py-2"
-            onSubmit={(e) => {
-              e.preventDefault();
-              console.log(e.target.query.value);
-            }}
-          >
+          <form className="space-y-4 px-2 py-2" onSubmit={handleSubmit}>
+            {isSubmitting && (
+              <div className="text-sm text-gray-500 mb-2">
+                Submitting your query...
+              </div>
+            )}
             <Input
-              id="query"
+              name="query"
               placeholder="Type your question here..."
               className=" w-full rounded-3xl "
+              disabled={isSubmitting}
+              ref={inputRef}
             />
           </form>
         </div>
