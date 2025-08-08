@@ -10,7 +10,7 @@ import {
 type MutationProps = {
   mutationKey: MutationKey;
   mutationFn: MutationFunction<any, any>;
-  queryKey: QueryKey[];
+  queryKey: QueryKey;
   optimisticFn?: (previousData: any, variables: any) => any;
   onSuccess?: () => void;
 };

@@ -1,39 +1,39 @@
 CREATE TABLE "chat_messages" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"session_id" integer NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"session_id" uuid NOT NULL,
 	"is_user" boolean DEFAULT true NOT NULL,
 	"content" text NOT NULL,
-	"created_at" text DEFAULT 'now()' NOT NULL
+	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "chat_sessions" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"user_id" integer NOT NULL,
-	"created_at" text DEFAULT 'now()' NOT NULL
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "courses" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"title" text NOT NULL,
-	"user_id" integer NOT NULL,
+	"user_id" uuid NOT NULL,
 	"description" text NOT NULL,
-	"created_at" text DEFAULT 'now()' NOT NULL
+	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "module" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"course_id" integer NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"course_id" uuid NOT NULL,
 	"title" text NOT NULL,
 	"description" text NOT NULL,
-	"created_at" text DEFAULT 'now()' NOT NULL
+	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "users" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"email" text NOT NULL,
 	"name" text NOT NULL,
 	"age" integer DEFAULT 0 NOT NULL,
-	"created_at" text DEFAULT 'now()' NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint

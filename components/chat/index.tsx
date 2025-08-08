@@ -8,48 +8,29 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import ChatWindow from "./window";
+import { ChatActions } from "@/action";
 
 type Props = {};
 
 const ChatInterface = (props: Props) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { mutate, isPending } = ChatActions.sendMessage();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent default form submission
-    setIsSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
     const query = formData.get("query") as string;
 
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        body: JSON.stringify({
-          query: query,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const result = await response.json();
-      console.log("Response:", result);
-
-      // Clear the input after successful submission
-      (e.target as HTMLFormElement).reset();
-    } catch (error) {
-      console.error("Error submitting chat:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
+    mutate({ query: query });
   };
 
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isSubmitting]);
+  }, [isPending]);
 
   return (
     <Popover>
@@ -65,7 +46,7 @@ const ChatInterface = (props: Props) => {
             <ChatWindow />
           </div>
           <form className="space-y-4 px-2 py-2" onSubmit={handleSubmit}>
-            {isSubmitting && (
+            {isPending && (
               <div className="text-sm text-gray-500 mb-2">
                 Submitting your query...
               </div>
@@ -74,7 +55,7 @@ const ChatInterface = (props: Props) => {
               name="query"
               placeholder="Type your question here..."
               className=" w-full rounded-3xl "
-              disabled={isSubmitting}
+              disabled={isPending}
               ref={inputRef}
             />
           </form>
